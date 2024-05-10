@@ -12,10 +12,10 @@ cd src_RPGenerator && make clean && make
 cd ..
 mv src_RPGenerator/bitcracker_rpgen build 2> /dev/null
 
-printf "\n====== Build BitCracker CUDA version ======\n"
-cd src_CUDA && make clean && make
-cd ..
-mv src_CUDA/bitcracker_cuda build 2> /dev/null
+# printf "\n====== Build BitCracker CUDA version ======\n"
+# cd src_CUDA && make clean && make
+# cd ..
+# mv src_CUDA/bitcracker_cuda build 2> /dev/null
 
 printf "\n====== Build BitCracker OpenCL version ======\n"
 cd src_OpenCL && make clean && make

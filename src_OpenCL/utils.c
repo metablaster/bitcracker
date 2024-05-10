@@ -2,19 +2,19 @@
  * BitCracker: BitLocker password cracking tool, OpenCL version.
  * Copyright (C) 2013-2017  Elena Ago <elena dot ago at gmail dot com>
  *							Massimo Bernaschi <massimo dot bernaschi at gmail dot com>
- * 
+ *
  * This file is part of the BitCracker project: https://github.com/e-ago/bitcracker
- * 
+ *
  * BitCracker is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * BitCracker is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with BitCracker. If not, see <http://www.gnu.org/licenses/>.
  */
@@ -48,7 +48,7 @@ void * Calloc(size_t len, size_t size) {
 		exit(EXIT_FAILURE);
 	}
 
-	ptr = (void *)calloc(len, size);	
+	ptr = (void *)calloc(len, size);
 	if( ptr == NULL )
 	{
 		fprintf(stderr,"Critical error: Memory allocation\n");
@@ -131,7 +131,7 @@ int parse_data(char *input_hash, unsigned char ** salt, unsigned char ** nonce,	
 		fprintf(stderr, "Input Hash error: you choose the -u option (User Password) but the input hash MUST be used with -r option (Recovery Password).\n");
 		goto out;
 	}
-		
+
 	p = strtokm(NULL, "$"); // salt length
 	salt_size = atoi(p);
 	if(salt_size != SALT_SIZE)
@@ -154,7 +154,7 @@ int parse_data(char *input_hash, unsigned char ** salt, unsigned char ** nonce,	
 		fprintf(stderr, "Wrong Iterations parameter\n");
 		goto out;
 	}
-	
+
 	p = strtokm(NULL, "$"); // nonce length
 	nonce_size = atoi(p);
 	if(nonce_size != NONCE_SIZE)
@@ -171,19 +171,19 @@ int parse_data(char *input_hash, unsigned char ** salt, unsigned char ** nonce,	
 	}
 
 	p = strtokm(NULL, "$"); // data_size
-	
+
 	vmk_size = atoi(p);
 	if(vmk_size != VMK_SIZE)
 	{
 		fprintf(stderr, "Wrong VMK size\n");
 		goto out;
 	}
-	
+
 	p = strtokm(NULL, "$"); // data
 	for (i = 0, j = 0; i < MAC_SIZE*2; i+=2, j++)
 	{
 		(*mac)[j] = (p[i] <= '9' ? p[i] - '0' : toupper(p[i]) - 'A' + 10) << 4;
-		(*mac)[j] |= p[i+1] <= '9' ? p[i+1] - '0' : toupper(p[i+1]) - 'A' + 10;	}
+		(*mac)[j] |= p[i+1] <= '9' ? p[i+1] - '0' : toupper(p[i+1]) - 'A' + 10;
 	}
 
 	if(mac_comparison == 1 && !memcmp((*mac), zero_string, MAC_SIZE))
@@ -202,14 +202,15 @@ int parse_data(char *input_hash, unsigned char ** salt, unsigned char ** nonce,	
 
 	return BIT_SUCCESS;
 
-	out:
-		fclose(fphash);
-		free(*salt);
-		free(*nonce);
-		free(*vmk);
-		free(*mac);
+out:
 
-		return BIT_FAILURE;
+	fclose(fphash);
+	free(*salt);
+	free(*nonce);
+	free(*vmk);
+	free(*mac);
+
+	return BIT_FAILURE;
 }
 
 static int print_once=0;
@@ -217,14 +218,14 @@ int readFilePassword(int ** buf_i, char ** buf_c, int maxNumPsw, FILE *fp) {
 	int i=0, j=0, k=0, size=0, count=0;
 	char tmp[PSW_CHAR_SIZE], tmp2[PSW_CHAR_SIZE], *p;
 	memset(tmp, 0, PSW_CHAR_SIZE);
-	
+
 	if (fp == NULL || feof(fp) || buf_i == NULL)
 	        return -1;
 
 	while(fgets(tmp, PSW_CHAR_SIZE, fp)) {
 		j=0; k=0; count=0;
 		size = (strlen(tmp)-1);
-		
+
 		if(attack_mode == MODE_USER_PASS && ( size > SECOND_LENGHT || size < MIN_INPUT_PASSWORD_LEN) && print_once == 0)
 		{
 			fprintf(stderr, "WARNING: During USER PASSWORD attack, only passwords between %d and %d character are considered. Passwords like %s will be ignored.\n", MIN_INPUT_PASSWORD_LEN, SECOND_LENGHT, tmp);
@@ -256,24 +257,24 @@ int readFilePassword(int ** buf_i, char ** buf_c, int maxNumPsw, FILE *fp) {
 			} while(p != NULL);
 
 			if(count != (RECOVERY_PASS_BLOCKS*2)) continue;
-			
+
 			((*buf_i)+(i*PSW_INT_SIZE))[0] = 	( (((unsigned int)tmp2[0]  ) << 24) & 0xFF000000) |
-								( (((unsigned int)tmp2[0+1]) << 16) & 0x00FF0000) |	
+								( (((unsigned int)tmp2[0+1]) << 16) & 0x00FF0000) |
 								( (((unsigned int)tmp2[0+2])  << 8) & 0x0000FF00)  |
 								( (((unsigned int)tmp2[0+3])  << 0) & 0x000000FF);
 
 			((*buf_i)+(i*PSW_INT_SIZE))[1] = 	( (((unsigned int)tmp2[4]) << 24) & 0xFF000000) |
-								( (((unsigned int)tmp2[4+1]) << 16) & 0x00FF0000) |	
+								( (((unsigned int)tmp2[4+1]) << 16) & 0x00FF0000) |
 								( (((unsigned int)tmp2[4+2]) << 8) & 0x0000FF00)  |
 								( (((unsigned int)tmp2[4+3]) << 0) & 0x000000FF);
 
 			((*buf_i)+(i*PSW_INT_SIZE))[2] = 	( (((unsigned int)tmp2[8]) << 24) & 0xFF000000) |
-								( (((unsigned int)tmp2[8+1]) << 16) & 0x00FF0000) |	
+								( (((unsigned int)tmp2[8+1]) << 16) & 0x00FF0000) |
 								( (((unsigned int)tmp2[8+2]) << 8) & 0x0000FF00)  |
 								( (((unsigned int)tmp2[8+3]) << 0) & 0x000000FF);
 
 			((*buf_i)+(i*PSW_INT_SIZE))[3] = 	( (((unsigned int)tmp2[12]) << 24) & 0xFF000000) |
-								( (((unsigned int)tmp2[12+1]) << 16) & 0x00FF0000) |	
+								( (((unsigned int)tmp2[12+1]) << 16) & 0x00FF0000) |
 								( (((unsigned int)tmp2[12+2]) << 8) & 0x0000FF00)  |
 								( (((unsigned int)tmp2[12+3]) << 0) & 0x000000FF);
 
